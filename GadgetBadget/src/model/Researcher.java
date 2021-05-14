@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class Researcher {
 	private Connection connect() {
@@ -18,6 +21,35 @@ public class Researcher {
 			e.printStackTrace();
 		}
 		return con;
+	}
+
+	public List<ResearcherModel> readJsonResearcher() {
+		List<ResearcherModel> researchList = new ArrayList<ResearcherModel>();
+		try {
+			Connection con = connect();
+			if (con == null) {
+				throw new RuntimeException("Error while connecting to the database for reading.");
+			}
+
+			String query = "select * from reseacher3";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				String researcherID = Integer.toString(rs.getInt("researcherID"));
+				String researcherName = rs.getString("researcherName");
+				String researcherPhone = Integer.toString(rs.getInt("researcherPhone"));
+				String researcherUniversity = rs.getString("researcherUniversity");
+				researchList
+						.add(new ResearcherModel(researcherID, researcherName, researcherPhone, researcherUniversity));
+
+			}
+			con.close();
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		return researchList;
 	}
 
 	public String insertResearcher(String name, int phone, String university) {
@@ -47,55 +79,55 @@ public class Researcher {
 		return output;
 	}
 
-	public String readResearcher() 
-		 { 
-		 String output = ""; 
-		 try
-		 { 
-		 Connection con = connect(); 
-		 if (con == null) 
-		 {return "Error while connecting to the database for reading."; } 
-		 
-		 // Prepare the html table to be displayed
-		 output = "<table border='1'><tr><th>researcher Id</th>" +"<th>researcher Name</th>"+
-		 "<th>researcher phone</th>" + 
-		 "<th>researcher university</th></tr>"; 
-		 
-		 String query = "select * from reseacher3"; 
-		 Statement stmt = con.createStatement();
-		 ResultSet rs = stmt.executeQuery(query); 
-		 
-		 // iterate through the rows in the result set
-		 while (rs.next()) 
-		 { 
-		 String researcherID = Integer.toString(rs.getInt("researcherID")); 
-		 String researcherName = rs.getString("researcherName"); 
-		 String researcherPhone = Integer.toString(rs.getInt("researcherPhone")); 
-		 String researcherUniversity = rs.getString("researcherUniversity"); 
-		 
-		 // Add into the html table
-		 output += "<tr><td>" + researcherID + "</td>"; 
-		 output += "<td>" + researcherName + "</td>"; 
-		 output += "<td>" + researcherPhone + "</td>"; 
-		 output += "<td>" + researcherUniversity + "</td>"; 
-		 
-		 // buttons
-		 /*output += "<td><input name='btnUpdate' type='button' value='Update' class='btn btn-secondary'></td>" + "<td><form method='post' action='researcher.jsp'>" + "<input name='btnRemove' type='submit' value='Remove' class='btn btn-danger'>"
-				 + "<input name='researcherID' type='hidden' value='" + researcherID 
-				 + "'>" + "</form></td></tr>"; */
-		 } 
-		 con.close(); 
-		 
-		 // Complete the html table
-		 output += "</table>"; 
-		 } 
-		 catch (Exception e) 
-		 { 
-		 output = "Error while reading the researchers."; 
-		 System.err.println(e.getMessage()); 
-		 } 
-		 return output; 
-		 }
+	public String readResearcher() {
+		String output = "";
+		try {
+			Connection con = connect();
+			if (con == null) {
+				return "Error while connecting to the database for reading.";
+			}
+
+			// Prepare the html table to be displayed
+			output = "<table border='1'><tr><th>researcher Id</th>" + "<th>researcher Name</th>"
+					+ "<th>researcher phone</th>" + "<th>researcher university</th></tr>";
+
+			String query = "select * from reseacher3";
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+
+			// iterate through the rows in the result set
+			while (rs.next()) {
+				String researcherID = Integer.toString(rs.getInt("researcherID"));
+				String researcherName = rs.getString("researcherName");
+				String researcherPhone = Integer.toString(rs.getInt("researcherPhone"));
+				String researcherUniversity = rs.getString("researcherUniversity");
+
+				// Add into the html table
+				output += "<tr><td>" + researcherID + "</td>";
+				output += "<td>" + researcherName + "</td>";
+				output += "<td>" + researcherPhone + "</td>";
+				output += "<td>" + researcherUniversity + "</td>";
+
+				// buttons
+				/*
+				 * output +=
+				 * "<td><input name='btnUpdate' type='button' value='Update' class='btn btn-secondary'></td>"
+				 * + "<td><form method='post' action='researcher.jsp'>" +
+				 * "<input name='btnRemove' type='submit' value='Remove' class='btn btn-danger'>"
+				 * + "<input name='researcherID' type='hidden' value='" + researcherID + "'>" +
+				 * "</form></td></tr>";
+				 */
+			}
+			con.close();
+
+			// Complete the html table
+			output += "</table>";
+		} catch (Exception e) {
+			output = "Error while reading the researchers.";
+			System.err.println(e.getMessage());
+		}
+		return output;
+	}
 
 	public String updateCustomer(String ID, String name, String phone, String university) {
 		String output = "";
@@ -134,7 +166,7 @@ public class Researcher {
 			String query = "delete from reseacher3 where researcherID=?";
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			// binding values
-			preparedStmt.setInt(1, Integer.parseInt (researcherID));
+			preparedStmt.setInt(1, Integer.parseInt(researcherID));
 			// execute the statement
 			preparedStmt.execute();
 			con.close();
